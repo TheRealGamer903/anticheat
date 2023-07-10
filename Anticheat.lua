@@ -240,23 +240,35 @@ local function checkSpeed(player)
     local humanoid = character:FindFirstChildOfClass("Humanoid")
     if not humanoid then return end
 
-    if humanoid.WalkSpeed > maxWalkSpeed then
-        freezePlayer(player)
-        return
-    end
+    local rootPart = character:FindFirstChild("HumanoidRootPart")
+    if not rootPart then return end
 
-    -- Check fall speed
-    if humanoid.FloorMaterial == Enum.Material.Air then
-        local velocityY = humanoid:GetVelocity().Y
-        if velocityY < -maxFallSpeed then
+    local vehicleSeat = rootPart:IsA("VehicleSeat") and rootPart or rootPart:FindFirstChildOfClass("VehicleSeat")
+    if vehicleSeat then
+        if vehicleSeat.Velocity.Magnitude > maxVehicleSpeed then
+            freezePlayer(player)
+            vehicleSeat:BreakJoints() -- Break the joints of the vehicle to freeze it
+            return
+        end
+    else
+        if humanoid.WalkSpeed > maxWalkSpeed then
             freezePlayer(player)
             return
         end
+
+        -- Check fall speed
+        if humanoid.FloorMaterial == Enum.Material.Air then
+            local velocityY = humanoid:GetVelocity().Y
+            if velocityY < -maxFallSpeed then
+                freezePlayer(player)
+                return
+            end
+        end
     end
 
-    -- Check other speed properties like vehicle speed, fly speed, etc. here
+    -- Check other speed properties like fly speed, etc. here
     -- Implement the appropriate checks and actions based on your game's logic
-    -- For example, you can check vehicle speed or fly speed properties and freeze the player accordingly
+    -- For example, you can check fly speed properties and freeze the player and vehicle accordingly
 end
 
 local function isGuiAllowed(guiName, playerRank, playerName)
