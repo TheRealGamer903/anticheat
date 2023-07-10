@@ -26,16 +26,6 @@ local excludedPlayers = {
     -- Add more usernames as needed
 }
 
-local maxWalkSpeed = 20 -- Maximum allowed walk speed (modify as needed)
-local maxFallSpeed = 100 -- Maximum allowed fall speed (modify as needed)
-local maxVehicleSpeed = 100 -- Maximum allowed vehicle speed (modify as needed)
-local maxOtherSpeed = 100 -- Maximum allowed speed for other properties (modify as needed)
-local freezeTime = 10 -- Time in seconds to freeze the player
-
-local positionCheckInterval = 1 -- Time interval for checking player position (in seconds)
-local maxPositionChangeThreshold = 200 -- Maximum allowed position change threshold (in studs)
-local maxPositionChangeTime = 5 -- Maximum allowed time for position change (in seconds)
-
 local function freezePlayer(player)
     -- Implement the freezing mechanism here
     -- For example, you can disable movement controls or set the player's WalkSpeed to 0
