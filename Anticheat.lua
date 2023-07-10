@@ -6,6 +6,13 @@ local allowedGuis = {
     -- Add more authorized GUI names as needed
 }
 
+local allowedScripts = {
+    -- List the names of the authorized scripts here
+    "Script1",
+    "Script2",
+    -- Add more authorized script names as needed
+}
+
 local allowedAdminUsers = {
     "Player1", -- Add the usernames of players allowed to use the admin GUI
     "Player2",
@@ -80,6 +87,30 @@ local function isGuiAllowed(guiName, playerRank, playerName)
     return false
 end
 
+local function isScriptAllowed(scriptName)
+    for _, allowedScript in ipairs(allowedScripts) do
+        if scriptName == allowedScript then
+            return true
+        end
+    end
+    return false
+end
+
+local function checkScriptIntegrity(player)
+    local character = player.Character
+    if not character then return end
+
+    for _, script in ipairs(character:GetDescendants()) do
+        if script:IsA("LocalScript") or script:IsA("ModuleScript") then
+            if not isScriptAllowed(script.Name) then
+                -- Perform actions for unauthorized scripts, such as freezing the player
+                freezePlayer(player)
+                break
+            end
+        end
+    end
+end
+
 local function isPositionModified(player, previousPosition, currentPosition, previousTime, currentTime)
     local positionChangeMagnitude = (previousPosition - currentPosition).Magnitude
     local positionChangeTime = currentTime - previousTime
@@ -141,7 +172,8 @@ game.Players.PlayerAdded:Connect(function(player)
     end)
 
     game:GetService("RunService").Heartbeat:Connect(function()
-        local character = player.Characterif not character then return end
+        local character = player.Character
+        if not character then return end
 
         local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
         if not humanoidRootPart then return end
@@ -168,12 +200,17 @@ game.Players.PlayerAdded:Connect(function(player)
             previousTime = tick()
         else
             previousPosition = currentPosition
-            previousTime = currentTime
+            previousTime =currentTime
         end
     end)
 
     -- Anti-meshing check
     game:GetService("RunService").Heartbeat:Connect(function()
         checkMeshing(player)
+    end)
+
+    -- Script integrity check
+    game:GetService("RunService").Heartbeat:Connect(function()
+        checkScriptIntegrity(player)
     end)
 end)
