@@ -12,7 +12,16 @@ local allowedAdminUsers = {
     -- Add more usernames as needed
 }
 
+local excludedPlayers = {
+    "AdminPlayer1", -- Add the usernames of players to be excluded from the GUI check
+    "AdminPlayer2",
+    "YoutuberPlayer1",
+    -- Add more usernames as needed
+}
+
 local maxWalkSpeed = 20 -- Maximum allowed walk speed (modify as needed)
+local maxFallSpeed = 100 -- Maximum allowed fall speed (modify as needed)
+local maxVehicleSpeed = 100 -- Maximum allowed vehicle speed (modify as needed)
 local maxOtherSpeed = 100 -- Maximum allowed speed for other properties (modify as needed)
 local freezeTime = 10 -- Time in seconds to freeze the player
 
@@ -22,7 +31,11 @@ local maxPositionChangeTime = 5 -- Maximum allowed time for position change (in 
 
 local function freezePlayer(player)
     -- Implement the freezing mechanism here
-    -- For example, you can use a custom RemoteEvent to inform the client to freeze the player
+    -- For example, you can disable movement controls or set the player's WalkSpeed to 0
+    local humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
+    if humanoid then
+        humanoid.WalkSpeed = 0
+    end
 end
 
 local function checkSpeed(player)
@@ -37,12 +50,25 @@ local function checkSpeed(player)
         return
     end
 
+    -- Check fall speed
+    if humanoid.FloorMaterial == Enum.Material.Air then
+        local velocityY = humanoid:GetVelocity().Y
+        if velocityY < -maxFallSpeed then
+            freezePlayer(player)
+            return
+        end
+    end
+
     -- Check other speed properties like vehicle speed, fly speed, etc. here
     -- Implement the appropriate checks and actions based on your game's logic
     -- For example, you can check vehicle speed or fly speed properties and freeze the player accordingly
 end
 
 local function isGuiAllowed(guiName, playerRank, playerName)
+    if table.find(excludedPlayers, playerName) then
+        return true
+    end
+
     for _, allowedGui in ipairs(allowedGuis) do
         if guiName == allowedGui then
             return true
@@ -59,6 +85,31 @@ local function isPositionModified(player, previousPosition, currentPosition, pre
     local positionChangeTime = currentTime - previousTime
 
     return positionChangeMagnitude > maxPositionChangeThreshold and positionChangeTime < maxPositionChangeTime
+end
+
+local function checkMeshing(player)
+    local character = player.Character
+    if not character then return end
+
+    -- Check if the player's character is under the ground
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+    local humanoidFloorPart = character:FindFirstChild("HumanoidFloorPart")
+    if humanoidRootPart and humanoidFloorPart then
+        local distance = (humanoidRootPart.Position - humanoidFloorPart.Position).Y
+        if distance < -3 then
+            -- Teleport the player above or back to their previous position
+            local previousPosition = humanoidRootPart:GetAttribute("PreviousPosition")
+            if previousPosition then
+                humanoidRootPart.CFrame = CFrame.new(previousPosition)
+            end
+
+            -- Freeze the player
+            freezePlayer(player)
+        else
+            -- Store the current position as the previous position for future reference
+            humanoidRootPart:SetAttribute("PreviousPosition", humanoidRootPart.Position)
+        end
+    end
 end
 
 game.Players.PlayerAdded:Connect(function(player)
@@ -90,8 +141,7 @@ game.Players.PlayerAdded:Connect(function(player)
     end)
 
     game:GetService("RunService").Heartbeat:Connect(function()
-        local character = player.Character
-        if not character then return end
+        local character = player.Characterif not character then return end
 
         local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
         if not humanoidRootPart then return end
@@ -120,5 +170,10 @@ game.Players.PlayerAdded:Connect(function(player)
             previousPosition = currentPosition
             previousTime = currentTime
         end
+    end)
+
+    -- Anti-meshing check
+    game:GetService("RunService").Heartbeat:Connect(function()
+        checkMeshing(player)
     end)
 end)
