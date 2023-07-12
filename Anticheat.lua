@@ -37,13 +37,13 @@ local maxPositionChangeTime = 5 -- Maximum allowed time for position change (in 
 local function freezePlayer(player)
     local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
     if humanoid then
-        humanoid:ChangeState(Enum.HumanoidStateType.Seated) -- Change the humanoid state to seated
         humanoid.PlatformStand = true -- Enable platform standing to prevent falling
         humanoid.AutoRotate = false -- Disable automatic rotation
         humanoid.WalkSpeed = 0 -- Disable movement controls by setting the WalkSpeed to 0
         humanoid.RootPart.Anchored = true -- Anchor the humanoid to prevent movement
     end
 end
+
 
 local function unfreezePlayer(player)
     local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
