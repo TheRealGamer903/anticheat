@@ -27,11 +27,12 @@ local excludedPlayers = {
 }
 
 local function freezePlayer(player)
-    -- Implement the freezing mechanism here
-    -- For example, you can disable movement controls or set the player's WalkSpeed to 0
-    local humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
+    local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
     if humanoid then
-        humanoid.WalkSpeed = 0
+        humanoid.PlatformStand = true -- Enable platform standing to prevent falling
+        humanoid.AutoRotate = false -- Disable automatic rotation
+        humanoid.WalkSpeed = 0 -- Disable movement controls by setting the WalkSpeed to 0
+        humanoid.RootPart.Anchored = true -- Anchor the humanoid to prevent movement
     end
 end
 
