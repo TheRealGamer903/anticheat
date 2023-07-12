@@ -2,17 +2,57 @@ local allowedGuis = {
 	-- List the names of the authorized GUIs here
 	"MainMenu",
 	"Settings",
+	"Freecam",
 	"AdminGUI", -- Add the name of the admin GUI
 	-- Add more authorized GUI names as needed
 }
 
 local allowedScripts = {
-	-- List the names of the authorized scripts here
-	"Script1",
-	"Script2",
+	"FreecamScript",
+	"PlayerScriptsLoader",
+	"RbxCharacterSounds",
+	"AtomicBinding",
+	"PlayerModule",
+	"CameraModule",
+	"BaseCamera",
+	"BaseOcclusion",
+	"CameraInput",
+	"CameraToggleStateController",
+	"CameraUI",
+	"CameraUtils",
+	"ClassicCamera",
+	"Invisicam",
+	"LegacyCamera",
+	"MouseLockController",
+	"OrbitalCamera",
+	"Poppercam",
+	"TransparencyController",
+	"VRBaseCamera",
+	"EVRCamera",
+	"VRVehicleCamera",
+	"VehicleCamera",
+	"VehicleCameraConfig",
+	"VehicleCameraCore",
+	"ZoomController",
+	"Ę Popper",
+	"ControlModule",
+	"BaseCharacterController",
+	"ClickToMoveController",
+	"ClickToMoveDisplay",
+	"DynamicThumbstick",
+	"Ę Gamepad",
+	"Keyboard",
+	"Path Display",
+	"Touch Jump",
+	"TouchThumbstick",
+	"VRNavigation",
+	"VehicleController",
+	"AnticheatSS",
+	"Health",
+	"Animate",
 	-- Add more authorized script names as needed
-}
 
+}
 local allowedAdminUsers = {
 	"Player1", -- Add the usernames of players allowed to use the admin GUI
 	"Player2",
@@ -116,8 +156,8 @@ local function checkScriptIntegrity(player)
 	for _, script in ipairs(character:GetDescendants()) do
 		if script:IsA("LocalScript") or script:IsA("ModuleScript") then
 			if not isScriptAllowed(script.Name) then
-				-- Perform actions for unauthorized scripts, such as freezing the player
-				freezePlayer(player)
+				-- Perform actions for unauthorized scripts, such as kicking the player
+				player:Kick("Unauthorized script detected!")
 				break
 			end
 		end
