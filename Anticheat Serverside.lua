@@ -2,6 +2,7 @@ local allowedGuis = {
 	-- List the names of the authorized GUIs here
 	"MainMenu",
 	"Settings",
+	"Freecam",
 	"AdminGUI", -- Add the name of the admin GUI
 	-- Add more authorized GUI names as needed
 }
